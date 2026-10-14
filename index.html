@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12645a">
+  <meta name="description" content="输入已完成成绩和考试权重，计算达到目标总分所需的剩余平均分。">
+  <title>考试目标分数计算器</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="calculator.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="page-header">
+      <span class="brand"><span class="brand-icon" aria-hidden="true">↗</span> 分数计划</span>
+      <span class="header-note">每一步，都算得清楚</span>
+    </header>
+    <section class="intro">
+      <p class="eyebrow">STUDY / PLAN / ACHIEVE</p>
+      <h1>下一场，要考多少分？</h1>
+      <p>填入已有成绩，看看距离目标还差多少。修改数值，结果自动更新。</p>
+    </section>
+    <div class="calculator-layout">
+      <section class="card input-card" aria-labelledby="input-title">
+        <div class="section-heading"><span class="step">01</span><h2 id="input-title">输入你的成绩</h2></div>
+        <p class="input-note">所有成绩按百分制填写，权重按百分比填写。</p>
+        <form id="score-form" novalidate>
+          <div class="field-grid">
+            <div class="field">
+              <label for="completed-weight">已完成权重</label>
+              <div class="input-wrap"><input id="completed-weight" name="completedWeight" type="number" inputmode="decimal" min="0" max="100" step="any" value="67.5" required aria-describedby="weight-help"><span aria-hidden="true">%</span></div>
+            </div>
+            <div class="field">
+              <label for="current-score">当前成绩</label>
+              <div class="input-wrap"><input id="current-score" name="currentScore" type="number" inputmode="decimal" min="0" max="100" step="any" value="77" required aria-describedby="score-help"><span aria-hidden="true">分</span></div>
+            </div>
+            <div class="field">
+              <label for="remaining-weight">剩余权重</label>
+              <div class="input-wrap"><input id="remaining-weight" name="remainingWeight" type="number" inputmode="decimal" min="0" max="100" step="any" value="32.5" required aria-describedby="weight-help"><span aria-hidden="true">%</span></div>
+            </div>
+            <div class="field">
+              <label for="target-score">目标总分</label>
+              <div class="input-wrap"><input id="target-score" name="targetScore" type="number" inputmode="decimal" min="0" max="100" step="any" value="70" required><span aria-hidden="true">分</span></div>
+            </div>
+          </div>
+          <p id="score-help" class="helper">当前成绩 = 已完成部分的平均分。例如 7.7/10，请填 77。</p>
+          <p id="weight-help" class="helper">已完成权重 + 剩余权重必须等于 100%。</p>
+          <div class="form-actions"><button type="button" id="fill-remaining">补齐剩余权重</button><button type="reset" class="text-button">恢复示例</button></div>
+        </form>
+        <p id="error" class="error" role="alert" hidden></p>
+      </section>
+      <section class="card result-card" aria-labelledby="result-title">
+        <div class="section-heading"><span class="step">02</span><h2 id="result-title">你的目标计划</h2></div>
+        <div id="result" role="status" aria-live="polite" aria-atomic="true">
+          <span id="status" class="badge"></span>
+          <p id="result-label" class="result-label">剩余部分所需平均分</p>
+          <p class="score"><span id="required-score">—</span><span id="score-unit" class="score-unit">分</span></p>
+          <p id="result-explanation" class="result-explanation"></p>
+        </div>
+        <div id="result-metrics" class="metrics">
+          <div><span>已累计总分</span><strong id="earned-score">—</strong></div>
+          <div><span>最高可达总分</span><strong id="maximum-score">—</strong></div>
+        </div>
+        <p id="empty-state" class="empty-state" hidden>填写有效数据后，这里会显示计算结果。</p>
+      </section>
+    </div>
+    <section id="scenarios" class="card scenarios-card" aria-labelledby="scenarios-title">
+      <div class="section-heading"><span class="step">03</span><h2 id="scenarios-title">换个分数，看看结果</h2></div>
+      <p class="input-note">假设剩余部分取得以下平均分，你的最终总分会是多少？</p>
+      <div class="table-wrap">
+        <table><caption class="sr-only">不同剩余平均分对应的最终总分和达标情况</caption><thead><tr><th scope="col">剩余平均分</th><th scope="col">预计总分</th><th scope="col">达标情况</th></tr></thead><tbody id="scenario-rows"></tbody></table>
+      </div>
+      <p class="helper">达标表示总分 ≥ 目标。比较使用未四舍五入的数值。</p>
+    </section>
+    <details class="formula card">
+      <summary>计算方式与使用说明</summary>
+      <p>最终总分 = 当前成绩 × 已完成权重 ÷ 100 + 剩余平均分 × 剩余权重 ÷ 100。</p>
+      <p>所需剩余平均分 =（目标总分 − 当前成绩 × 已完成权重 ÷ 100）÷（剩余权重 ÷ 100）。</p>
+      <p>可实现的所需分数向上保留两位小数，避免四舍五入后略低于目标。学校若只给整数分，请再向上取整。</p>
+      <p>这是剩余考试的加权平均分要求。各次考试分数可以不同；若每次都达到该分数，也能达到目标。本工具不包含学校的单项及格要求、加分或特殊评分规则。</p>
+    </details>
+    <footer>给学习一个清晰的目标 · 数据仅在当前页面计算</footer>
+    <noscript><p class="error">请启用 JavaScript 后使用计算器。</p></noscript>
+  </main>
+</body>
+</html>

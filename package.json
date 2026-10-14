@@ -1,0 +1,10 @@
+{
+  "name": "exam-target-calculator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "适合手机的中文考试目标分数计算器",
+  "scripts": {
+    "test": "node --test tests/calculator.test.js"
+  },
+  "engines": { "node": ">=18" }
+}
